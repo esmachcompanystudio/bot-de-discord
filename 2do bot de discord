@@ -1,0 +1,65 @@
+import discord
+from discord.ext import commands
+import random
+
+# Crear un objeto de intenciones para manejar eventos específicos
+intents = discord.Intents.default()
+intents.message_content = True
+
+# Crear una instancia del bot con un prefijo de comando y las intenciones configuradas
+bot = commands.Bot(command_prefix='$', intents=intents)
+
+# Evento que se activa cuando el bot se ha iniciado correctamente
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+# Comando para saludar al bot
+@bot.command()
+async def greet(ctx):
+    await ctx.send(f'Hola, soy {bot.user}! ¿En qué puedo ayudarte?')
+
+# Comando que envía risas multiplicadas por un número dado
+@bot.command()
+async def laughter(ctx, count_laughter=5):
+    await ctx.send("ja" * count_laughter)
+
+# Comando que suma dos números dados
+@bot.command()
+async def sum(ctx, num1: int, num2: int):
+    """Adds two numbers together."""
+    await ctx.send(f'The sum of {num1} and {num2} is {num1 + num2}')
+
+# Comando que elige entre múltiples opciones dadas
+@bot.command(description='Choose between multiple options')
+async def pick(ctx, *choices: str):
+    """Chooses between multiple options."""
+    await ctx.send(f'I choose: {random.choice(choices)}')
+
+# Comando que muestra cuándo un miembro se unió al servidor
+@bot.command()
+async def joined_at(ctx, member: discord.Member):
+    """Tells when a member joined the server."""
+    await ctx.send(f'{member.name} joined the server on {discord.utils.format_dt(member.joined_at)}')
+
+# Comando para obtener un emoji aleatorio del servidor
+@bot.command()
+async def emoji(ctx):
+    emoji = random.choice(ctx.guild.emojis)
+    await ctx.send(str(emoji))
+
+# Grupo de comandos relacionados con la "coolness" (coolitud)
+@bot.group()
+async def cool(ctx):
+    """Says if a user is cool."""
+    if ctx.invoked_subcommand is None:
+        await ctx.send(f'Yeah, {ctx.subcommand_passed} is cool.')
+
+# Subcomando para verificar si el bot es "cool"
+@cool.command(name='bot')
+async def is_bot_cool(ctx):
+    """Checks if the bot is cool."""
+    await ctx.send('Yes, the bot is cool.')
+
+# Iniciar el bot con el token proporcionado
+bot.run("TU_TOKEN_AQUI")
